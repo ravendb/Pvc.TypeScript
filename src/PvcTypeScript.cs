@@ -31,7 +31,8 @@ namespace PvcPlugins
             var tsFilesString = string.Join(" ", tsFiles.Select(f => "\"" + f + "\""));
 
             // Should we embed the compiler instead?
-            var compilerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft SDKs\TypeScript\1.0\tsc.exe");
+            var compilerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft SDKs\TypeScript\1.4\tsc.exe");
+			Console.WriteLine("Using type script compiler: {0}", compilerPath);
             var result = PvcUtil.StreamProcessExecution(compilerPath, Environment.CurrentDirectory, string.Format("{0} {1}", this.compilerOptions, tsFilesString));
 
             string tsOutputLine;
