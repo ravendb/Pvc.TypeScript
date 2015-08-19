@@ -32,7 +32,13 @@ namespace PvcPlugins
 
             // Should we embed the compiler instead?
             var compilerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft SDKs\TypeScript\1.0\tsc.exe");
-            var result = PvcUtil.StreamProcessExecution(compilerPath, Environment.CurrentDirectory, string.Format("{0} {1}", this.compilerOptions, tsFilesString));
+
+            var p = Path.GetTempFileName();
+            File.WriteAllText(p, string.Format("{0} {1}", this.compilerOptions, tsFilesString));
+
+            var result = PvcUtil.StreamProcessExecution(compilerPath, Environment.CurrentDirectory, "@"+ p);
+
+            File.Delete(p);
 
             string tsOutputLine;
             var outStreamReader = new StreamReader(result.Item1);
