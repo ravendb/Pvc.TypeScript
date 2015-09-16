@@ -1,24 +1,33 @@
 using PvcCore;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PvcPlugins
 {
     public class PvcTypeScript : PvcPlugin
     {
+	    private const string DefaultCompilerVersion = "1.4";
+
         private readonly string compilerOptions;
 
-        public PvcTypeScript(string compilerOptions)
+	    private readonly string compilerVersion;
+
+	    public PvcTypeScript(string compilerOptions) 
+			: this (DefaultCompilerVersion, compilerOptions)
         {
-            this.compilerOptions = compilerOptions;
         }
 
-        public override string[] SupportedTags
+	    public PvcTypeScript(string compilerVersion, string compilerOptions)
+	    {
+		    this.compilerVersion = compilerVersion;
+		    this.compilerOptions = compilerOptions;
+	    }
+
+	    public override string[] SupportedTags
         {
             get
             {
@@ -31,8 +40,8 @@ namespace PvcPlugins
             var tsFiles = inputStreams.Select(i => i.StreamName).ToList();
             var tsFilesString = string.Join(" ", tsFiles.Select(f => "\"" + f + "\""));
 
-            // Should we embed the compiler instead?
-            var compilerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft SDKs\TypeScript\1.4\tsc.exe");
+			// Should we embed the compiler instead?
+			var compilerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), string.Format(@"Microsoft SDKs\TypeScript\{0}\tsc.exe", compilerVersion));
 			Console.WriteLine("Using type script compiler: {0}", compilerPath);
 
 			var p = Path.GetTempFileName();
@@ -77,9 +86,9 @@ namespace PvcPlugins
 	        }
 	        finally
 	        {
-				File.Delete(p);
+				if (File.Exists(p))
+					File.Delete(p);
 			}
-         
         }
 
 		public static Process StreamProcessExecution(string processPath, string workingDirectory, params string[] args)
